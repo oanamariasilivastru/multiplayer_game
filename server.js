@@ -1,4 +1,3 @@
-// server.js
 const express = require('express')
 const http = require('http')
 const path = require('path')
@@ -11,18 +10,18 @@ const io = socketIo(server)
 // Servim conținutul din folderul "public"
 app.use(express.static(path.join(__dirname, 'public')))
 
-// rooms[roomId] = { players: { socketId1: {...}, socketId2: {...} } }
+// Structura: rooms[roomId] = { players: { socketId1: {...}, socketId2: {...} } }
 const rooms = {}
 
 io.on('connection', socket => {
   console.log('Client connected:', socket.id)
 
-  // Când cineva face Host
+  // 1) Când cineva face Host
   socket.on('hostGame', () => {
     const roomId = Math.random().toString(36).substr(2, 5)
     rooms[roomId] = { players: {} }
 
-    // Marcam jucătorul Host ca "player1"
+    // Marcam jucătorul host ca "player1"
     rooms[roomId].players[socket.id] = {
       x: 0,
       y: 0,
@@ -35,7 +34,7 @@ io.on('connection', socket => {
     console.log(`Host created room: ${roomId}`)
   })
 
-  // Când cineva face Join
+  // 2) Când cineva face Join
   socket.on('joinGame', roomId => {
     const room = rooms[roomId]
     if (!room) {
@@ -65,14 +64,14 @@ io.on('connection', socket => {
     }
   })
 
-  // Jucătorul trimite starea locală
+  // 3) Jucătorul trimite starea locală
   socket.on('playerState', data => {
     // data = { roomId, x, y, health, isAttacking, spriteName, framesCurrent, ... }
     const room = rooms[data.roomId]
     if (!room) return
     if (!room.players[socket.id]) return
 
-    // Updatăm starea jucătorului
+    // Updatăm starea jucătorului în server
     rooms[data.roomId].players[socket.id] = {
       ...rooms[data.roomId].players[socket.id],
       ...data
@@ -85,20 +84,21 @@ io.on('connection', socket => {
     })
   })
 
-  // Pauză sincronizată
+  // 4) Pauză sincronizată
   socket.on('togglePause', data => {
     socket.to(data.roomId).emit('pauseUpdate', {
       isPaused: data.isPaused
     })
   })
 
-  // Lovitură => scădem HP la adversar
+  // 5) Lovitură => scădem HP adversar
   socket.on('hitEnemy', data => {
     // data = { roomId, damage }
+    // Anunțăm direct adversarul că a fost lovit
     socket.to(data.roomId).emit('enemyWasHit', { damage: data.damage })
   })
 
-  // Deconectare
+  // 6) Deconectare
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id)
     for (const roomId in rooms) {
