@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <title>Multiplayer Fighter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Press Start 2P', cursive;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #222;
+      overflow: hidden;
+    }
+    #startScreen {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+    #startScreen input {
+      width: 250px;
+      margin: 10px 0;
+    }
+    #gameContainer { display: none; }
+    #gameCanvas {
+      display: block;
+      background: #87CEEB;
+      margin: 0 auto;
+      border: 2px solid #000;
+    }
+    #hostBtn, #joinBtn {
+      margin: 10px;
+      padding: 10px 20px;
+      background: #ff0080;
+      border: 2px solid #fff;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Ecranul Start -->
+  <div id="startScreen">
+    <h1 style="color:white;">Multiplayer Fighter</h1>
+    
+    <button id="hostBtn">Host Game</button>
+    <input type="text" id="joinRoomId" placeholder="Enter room ID to join" />
+    <button id="joinBtn">Join Game</button>
+    <div id="status" style="color: white; margin:10px 0"></div>
+  </div>
+
+  <!-- Container joc -->
+  <div id="gameContainer">
+    <div style="position: relative; display:inline-block;">
+      <!-- UI Health + Timer -->
+      <div
+        style="
+          position: absolute;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          padding: 20px;
+        "
+      >
+        <!-- Player Health -->
+        <div
+          style="
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            border-top: 4px solid white;
+            border-left: 4px solid white;
+            border-bottom: 4px solid white;
+          "
+        >
+          <div style="background-color: red; height: 30px; width: 100%"></div>
+          <div
+            id="playerHealth"
+            style="
+              position: absolute;
+              background: #818cf8;
+              top: 0; right: 0; bottom: 0;
+              width: 100%;
+            "
+          ></div>
+        </div>
+
+        <!-- Timer -->
+        <div
+          id="timer"
+          style="
+            background-color: black;
+            width: 100px;
+            height: 50px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            border: 4px solid white;
+          "
+        >
+          60
+        </div>
+        <!-- Enemy Health -->
+        <div
+          style="
+            position: relative;
+            width: 100%;
+            border-top: 4px solid white;
+            border-bottom: 4px solid white;
+            border-right: 4px solid white;
+          "
+        >
+          <div style="background-color: red; height: 30px"></div>
+          <div
+            id="enemyHealth"
+            style="
+              position: absolute;
+              background: #818cf8;
+              top: 0; right: 0; bottom: 0; left: 0;
+            "
+          ></div>
+        </div>
+      </div>
+
+      <div
+        id="displayText"
+        style="
+          position: absolute;
+          color: white;
+          align-items: center;
+          justify-content: center;
+          top: 0; right:0; bottom:0; left:0;
+          display: none;
+        "
+      >Tie</div>
+
+      <canvas id="gameCanvas" width="1024" height="576"></canvas>
+    </div>
+  </div>
+
+  <!-- Pause Modal -->
+  <div id="pauseModal"
+       style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;
+              background: rgba(0,0,0,0.8);color:white;font-size:20px;
+              z-index:100;align-items:center;justify-content:center;">
+    Joc Pauzat! Apasă ESC pentru a continua.
+  </div>
+  
+  <!-- Scripturi -->
+  <script src="/socket.io/socket.io.js"></script> 
+  <script src="js/utils.js"></script>
+  <script src="js/classes.js"></script>
+  <script src="js/client.js"></script>
+</body>
+</html>
